@@ -2,6 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <title>Message Board</title>
   <meta http-equiv="refresh" content="30">
   <style>
     body {
@@ -17,10 +18,22 @@
       font-size: 72px;
       text-align: center;
       color: #333;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <h1>Message number 3</h1>
+  <h1 id="msg">Loading…</h1>
+
+  <script>
+    fetch('message.txt')
+      .then(response => response.text())
+      .then(text => {
+        document.getElementById('msg').textContent = text;
+      })
+      .catch(err => {
+        document.getElementById('msg').textContent = 'Error loading message';
+      });
+  </script>
 </body>
 </html>
