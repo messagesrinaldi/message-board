@@ -3,46 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <title>Message Board</title>
-  <meta http-equiv="refresh" content="30">
   <style>
     body {
       background: #fdf6e3;
       font-family: Arial, sans-serif;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
-    }
-    h1 {
-      font-size: 72px;
       text-align: center;
-      color: #333;
+    }
+    #msg {
+      font-size: 72px;
+      margin-bottom: 40px;
       white-space: pre-wrap;
+      color: #333;
+    }
+    #ack {
+      font-size: 48px;
+      padding: 20px 40px;
+      background: #444;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1 id="msg">Loading…</h1>
 
-<script>
-  function loadMessage() {
-    const url = 'message.txt?v=' + Date.now();  // cache‑buster
-    fetch(url)
-      .then(response => response.text())
-      .then(text => {
-        document.getElementById('msg').textContent = text;
-      })
-      .catch(err => {
-        document.getElementById('msg').textContent = 'Error loading message';
-      });
-  }
+  <div id="msg">Loading…</div>
+  <button id="ack">Acknowledge</button>
 
-  loadMessage();  // load immediately
+  <script>
+    // Load message from message.txt with cache‑buster
+    function loadMessage() {
+      const url = 'message.txt?v=' + Date.now();
+      fetch(url)
+        .then(r => r.text())
+        .then(t => {
+          document.getElementById('msg').textContent = t;
+        })
+        .catch(() => {
+          document.getElementById('msg').textContent = 'Error loading message';
+        });
+    }
 
-  // reload message every 30 seconds without reloading the whole page
-  setInterval(loadMessage, 30000);
-</script>
+    // Initial load + refresh every 30 seconds
+    loadMessage();
+    setInterval(loadMessage, 30000);
+
+    // Acknowledge button behaviour
+    document.getElementById('ack').onclick = function() {
+
+      // 1. Send acknowledgement to Cloudflare Worker
+      fetch('https://old-butterfly-37c8.messages-rinaldi.workers.dev/', {   // ← YOUR WORKER URL
+        method: 'POST'
+      }).catch(() => {});
+
+      // 2. Blank black screen
+      document.body.innerHTML = "";
+      document.body.style.background = "#000";
+    };
+  </script>
 
 </body>
 </html>
