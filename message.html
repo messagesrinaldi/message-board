@@ -25,8 +25,10 @@
 <body>
   <h1 id="msg">Loading…</h1>
 
-  <script>
-    fetch('message.txt')
+<script>
+  function loadMessage() {
+    const url = 'message.txt?v=' + Date.now();  // cache‑buster
+    fetch(url)
       .then(response => response.text())
       .then(text => {
         document.getElementById('msg').textContent = text;
@@ -34,6 +36,13 @@
       .catch(err => {
         document.getElementById('msg').textContent = 'Error loading message';
       });
-  </script>
+  }
+
+  loadMessage();  // load immediately
+
+  // reload message every 30 seconds without reloading the whole page
+  setInterval(loadMessage, 30000);
+</script>
+
 </body>
 </html>
